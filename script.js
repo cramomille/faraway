@@ -1,9 +1,5 @@
-const nombreDeParties = 100;
-
-// Tableau qui contiendra tous les joueurs de toutes les parties
 const toutesLesLignes = [];
 
-// Colonnes correspondant aux scores
 const colonnesScores = [
     "C8",
     "C7",
@@ -18,21 +14,22 @@ const colonnesScores = [
 
 
 // --------------------------------------------------
-// Lecture d'un fichier CSV
+// Lecture d'un CSV
 // --------------------------------------------------
 
 async function lireCSV(url) {
+
     const response = await fetch(url);
 
     if (!response.ok) {
-        throw new Error(`Impossible de lire ${url}`);
+        throw new Error(`Fichier introuvable : ${url}`);
     }
 
     const texte = await response.text();
 
     const lignes = texte
         .trim()
-        .split("\n");
+        .split(/\r?\n/);
 
     if (lignes.length < 2) {
         return [];
@@ -40,11 +37,13 @@ async function lireCSV(url) {
 
     const entetes = lignes[0]
         .split(",")
-        .map(colonne => colonne.trim());
+        .map(x => x.trim().replace(/^"|"$/g, ""));
 
     return lignes.slice(1).map(ligne => {
 
-        const valeurs = ligne.split(",");
+        const valeurs = ligne
+            .split(",")
+            .map(x => x.trim().replace(/^"|"$/g, ""));
 
         const objet = {};
 
@@ -58,14 +57,16 @@ async function lireCSV(url) {
 
 
 // --------------------------------------------------
-// Chargement de toutes les parties
+// Charger les parties
 // --------------------------------------------------
 
 async function chargerParties() {
 
-    for (let i = 1; i <= nombreDeParties; i++) {
+    let numero = 1;
 
-        const id = String(i).padStart(4, "0");
+    while (true) {
+
+        const id = String(numero).padStart(4, "0");
 
         const fichier = `r/data/faraway_game_${id}.csv`;
 
@@ -73,15 +74,19 @@ async function chargerParties() {
 
             const lignes = await lireCSV(fichier);
 
+            // On ajoute le numéro de partie
             lignes.forEach(ligne => {
                 ligne.partie = id;
                 toutesLesLignes.push(ligne);
             });
 
+            console.log(`Partie ${id} chargée`);
+
+            numero++;
+
         } catch (erreur) {
 
-            // Le fichier n'existe probablement pas.
-            // On arrete simplement la recherche.
+            console.log(`Fin des fichiers à la partie ${id}`);
             break;
         }
     }
@@ -89,21 +94,28 @@ async function chargerParties() {
 
 
 // --------------------------------------------------
-// Calcul des scores
+// Calcul du score d'une joueuse
 // --------------------------------------------------
 
 function calculerScore(joueur) {
 
-    return colonnesScores.reduce((total, colonne) => {
+    let total = 0;
 
-        return total + Number(joueur[colonne] || 0);
+    colonnesScores.forEach(colonne => {
 
-    }, 0);
+        const valeur = Number(joueur[colonne]);
+
+        if (!Number.isNaN(valeur)) {
+            total += valeur;
+        }
+    });
+
+    return total;
 }
 
 
 // --------------------------------------------------
-// Mediane
+// Médiane
 // --------------------------------------------------
 
 function calculerMediane(valeurs) {
@@ -114,16 +126,20 @@ function calculerMediane(valeurs) {
 
     if (triees.length % 2 === 0) {
 
-        return (triees[milieu - 1] + triees[milieu]) / 2;
+        return (
+            triees[milieu - 1] +
+            triees[milieu]
+        ) / 2;
 
+    } else {
+
+        return triees[milieu];
     }
-
-    return triees[milieu];
 }
 
 
 // --------------------------------------------------
-// Affichage
+// Statistiques
 // --------------------------------------------------
 
 async function afficherStatistiques() {
@@ -132,26 +148,46 @@ async function afficherStatistiques() {
 
         await chargerParties();
 
-        const scores = toutesLesLignes.map(calculerScore);
+        console.log("Toutes les lignes :", toutesLesLignes);
+
+        // Calcul des scores
+        const scores = toutesLesLignes.map(joueur => {
+
+            const score = calculerScore(joueur);
+
+            console.log(
+                joueur.joueuse,
+                joueur.partie,
+                score
+            );
+
+            return score;
+        });
+
+
+        const nombreDeParties = new Set(
+            toutesLesLignes.map(joueur => joueur.partie)
+        ).size;
+
 
         const nombreDeScores = scores.length;
 
-        // Chaque fichier correspond a une partie.
-        const nombreDeParties = new Set(
-            toutesLesLignes.map(ligne => ligne.partie)
-        ).size;
 
-        const meilleurScore = Math.max(...scores);
+        const scoreMaximum = Math.max(...scores);
 
-        const pireScore = Math.min(...scores);
+
+        const scoreMinimum = Math.min(...scores);
+
 
         const scoreMedian = calculerMediane(scores);
 
+
+        // Affichage
         document.getElementById("stats").textContent =
 `Nombre de parties : ${nombreDeParties}
 Nombre de scores : ${nombreDeScores}
-Score maximum : ${meilleurScore}
-Score minimum : ${pireScore}
+Score maximum : ${scoreMaximum}
+Score minimum : ${scoreMinimum}
 Score médian : ${scoreMedian}`;
 
     } catch (erreur) {
@@ -159,7 +195,7 @@ Score médian : ${scoreMedian}`;
         console.error(erreur);
 
         document.getElementById("stats").textContent =
-            "Erreur lors du chargement des donnees.";
+            "Erreur lors du chargement des données.";
     }
 }
 
