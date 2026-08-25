@@ -148,7 +148,7 @@ save_game <- function(scores,
   file <- file.path(dir, paste0("faraway_game_", id, ".csv"))
   
   # Enregistrement et affichage dans la console
-  write.csv(df, file = file)
+  write.csv(df, file = file, row.names = FALSE)
   print(df)
   
   return(file)

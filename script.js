@@ -57,7 +57,7 @@ async function lireCSV(url) {
 
 
 // --------------------------------------------------
-// Charger les parties
+// Chargement des parties
 // --------------------------------------------------
 
 async function chargerParties() {
@@ -74,7 +74,6 @@ async function chargerParties() {
 
             const lignes = await lireCSV(fichier);
 
-            // On ajoute le numéro de partie
             lignes.forEach(ligne => {
                 ligne.partie = id;
                 toutesLesLignes.push(ligne);
@@ -139,7 +138,115 @@ function calculerMediane(valeurs) {
 
 
 // --------------------------------------------------
-// Statistiques
+// Statistiques par joueuse
+// --------------------------------------------------
+
+function calculerStatistiquesJoueuses() {
+
+    const joueuses = {};
+
+    toutesLesLignes.forEach(joueur => {
+
+        const nom = joueur.joueuse;
+        const score = calculerScore(joueur);
+
+        if (!joueuses[nom]) {
+
+            joueuses[nom] = {
+                nom: nom,
+                parties: 0,
+                meilleurScore: 0
+            };
+        }
+
+        joueuses[nom].parties++;
+
+        if (score > joueuses[nom].meilleurScore) {
+            joueuses[nom].meilleurScore = score;
+        }
+    });
+
+    // Transformation en tableau
+    return Object.values(joueuses)
+
+        // Tri par nombre de parties décroissant
+        .sort((a, b) => {
+
+            if (b.parties !== a.parties) {
+                return b.parties - a.parties;
+            }
+
+            // En cas d'égalité :
+            // meilleur score décroissant
+            return b.meilleurScore - a.meilleurScore;
+        });
+}
+
+
+// --------------------------------------------------
+// Affichage du tableau des joueuses
+// --------------------------------------------------
+
+function afficherTableauJoueuses(statistiques) {
+
+    const tableau = document.createElement("table");
+
+    const thead = document.createElement("thead");
+    const ligneEntete = document.createElement("tr");
+
+    const entetes = [
+        "Joueuse",
+        "Parties",
+        "Meilleur score"
+    ];
+
+    entetes.forEach(texte => {
+
+        const cellule = document.createElement("th");
+
+        cellule.textContent = texte;
+
+        ligneEntete.appendChild(cellule);
+    });
+
+    thead.appendChild(ligneEntete);
+    tableau.appendChild(thead);
+
+
+    const tbody = document.createElement("tbody");
+
+    statistiques.forEach(joueuse => {
+
+        const ligne = document.createElement("tr");
+
+
+        const celluleNom = document.createElement("td");
+        celluleNom.textContent = joueuse.nom;
+
+
+        const celluleParties = document.createElement("td");
+        celluleParties.textContent = joueuse.parties;
+
+
+        const celluleMeilleurScore = document.createElement("td");
+        celluleMeilleurScore.textContent = joueuse.meilleurScore;
+
+
+        ligne.appendChild(celluleNom);
+        ligne.appendChild(celluleParties);
+        ligne.appendChild(celluleMeilleurScore);
+
+        tbody.appendChild(ligne);
+    });
+
+    tableau.appendChild(tbody);
+
+    document.getElementById("tableau-joueuses").appendChild(tableau);
+}
+
+
+// --------------------------------------------------
+// Statistiques générales
 // --------------------------------------------------
 
 async function afficherStatistiques() {
@@ -150,7 +257,11 @@ async function afficherStatistiques() {
 
         console.log("Toutes les lignes :", toutesLesLignes);
 
+
+        // ------------------------------------------
         // Calcul des scores
+        // ------------------------------------------
+
         const scores = toutesLesLignes.map(joueur => {
 
             const score = calculerScore(joueur);
@@ -164,6 +275,10 @@ async function afficherStatistiques() {
             return score;
         });
 
+
+        // ------------------------------------------
+        // Statistiques globales
+        // ------------------------------------------
 
         const nombreDeParties = new Set(
             toutesLesLignes.map(joueur => joueur.partie)
@@ -182,13 +297,30 @@ async function afficherStatistiques() {
         const scoreMedian = calculerMediane(scores);
 
 
-        // Affichage
+        // ------------------------------------------
+        // Affichage des statistiques
+        // ------------------------------------------
+
         document.getElementById("stats").textContent =
 `Nombre de parties : ${nombreDeParties}
 Nombre de scores : ${nombreDeScores}
 Score maximum : ${scoreMaximum}
 Score minimum : ${scoreMinimum}
 Score médian : ${scoreMedian}`;
+
+
+        // ------------------------------------------
+        // Statistiques par joueuse
+        // ------------------------------------------
+
+        const statistiquesJoueuses =
+            calculerStatistiquesJoueuses();
+
+
+        afficherTableauJoueuses(
+            statistiquesJoueuses
+        );
+
 
     } catch (erreur) {
 
