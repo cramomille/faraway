@@ -1,6 +1,6 @@
 @font-face {
     font-family: "Consolas";
-    src: url("public/font/Consolas.ttf") format("truetype");
+    src: url("public/font/CONSOLA.TTF") format("truetype");
 }
 
 * {
@@ -36,22 +36,21 @@ h1 {
     margin: 0 0 15px 0;
 
     font-size: 22px;
+    color: #9d9d9c;
     font-weight: normal;
 }
 
 .intro {
     margin: 0 0 25px 0;
 
-    font-size: 12px;
+    font-size: 10px;
     line-height: 1.5;
 }
 
 #stats {
     white-space: pre-line;
-
-    font-size: 12px;
+    font-size: 10px;
     line-height: 1.7;
-
     margin-bottom: 25px;
 }
 
@@ -67,11 +66,8 @@ h1 {
 
 table {
     width: 100%;
-
     border-collapse: collapse;
-
     font-size: 10px;
-
     table-layout: fixed;
 }
 
@@ -102,8 +98,7 @@ td:first-child {
 /* Titres des colonnes */
 th {
     font-weight: normal;
-
-    color: #b297c7;
+    color: #9d9d9c;
 }
 
 /* Lignes */

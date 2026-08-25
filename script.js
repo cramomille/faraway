@@ -315,11 +315,11 @@ function afficherTableauJoueuses(statistiques) {
         const valeurs = [
             joueuse.nom,
             joueuse.parties,
-            `${joueuse.pourcentageVictoire.toFixed(1)} %`,
+            joueuse.pourcentageVictoire.toFixed(1),
             joueuse.scoresTop20,
             joueuse.meilleurScore,
             joueuse.scoreMin,
-            joueuse.scoreMedian
+            Math.round(joueuse.scoreMedian)
         ];
 
         valeurs.forEach(valeur => {
