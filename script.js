@@ -189,59 +189,35 @@ function calculerStatistiquesJoueuses() {
 
 function afficherTableauJoueuses(statistiques) {
 
-    const tableau = document.createElement("table");
-
-    const thead = document.createElement("thead");
-    const ligneEntete = document.createElement("tr");
-
-    const entetes = [
-        "Joueuse",
-        "Parties",
-        "Meilleur score"
-    ];
-
-    entetes.forEach(texte => {
-
-        const cellule = document.createElement("th");
-
-        cellule.textContent = texte;
-
-        ligneEntete.appendChild(cellule);
-    });
-
-    thead.appendChild(ligneEntete);
-    tableau.appendChild(thead);
-
-
-    const tbody = document.createElement("tbody");
+    let html = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Joueuse</th>
+                    <th>Parties</th>
+                    <th>Meilleur score</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
     statistiques.forEach(joueuse => {
 
-        const ligne = document.createElement("tr");
-
-
-        const celluleNom = document.createElement("td");
-        celluleNom.textContent = joueuse.nom;
-
-
-        const celluleParties = document.createElement("td");
-        celluleParties.textContent = joueuse.parties;
-
-
-        const celluleMeilleurScore = document.createElement("td");
-        celluleMeilleurScore.textContent = joueuse.meilleurScore;
-
-
-        ligne.appendChild(celluleNom);
-        ligne.appendChild(celluleParties);
-        ligne.appendChild(celluleMeilleurScore);
-
-        tbody.appendChild(ligne);
+        html += `
+            <tr>
+                <td>${joueuse.nom}</td>
+                <td>${joueuse.parties}</td>
+                <td>${joueuse.meilleurScore}</td>
+            </tr>
+        `;
     });
 
-    tableau.appendChild(tbody);
+    html += `
+            </tbody>
+        </table>
+    `;
 
-    document.getElementById("tableau-joueuses").appendChild(tableau);
+    document.getElementById("tableau-joueuses").innerHTML = html;
 }
 
 
