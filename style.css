@@ -7,51 +7,106 @@
     box-sizing: border-box;
 }
 
-html,
-body {
-    margin: 0;
-    padding: 0;
+html {
+    font-size: 14px;
 }
 
 body {
-    width: 390px;
-    max-width: 100%;
-    min-height: 100vh;
-    margin: 0 auto;
+    margin: 0;
+    padding: 20px 10px;
 
     font-family: "Consolas", monospace;
-    font-size: 16px;
+
+    /* Format mobile même sur ordinateur */
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    overflow-x: hidden;
 }
 
 main {
-    padding: 20px;
+    width: 100%;
+}
+
+h1 {
+    margin: 0 0 15px 0;
+
+    font-size: 22px;
+    font-weight: normal;
+}
+
+.intro {
+    margin: 0 0 25px 0;
+
+    font-size: 12px;
+    line-height: 1.5;
 }
 
 #stats {
     white-space: pre-line;
-    line-height: 1.8;
-    margin-bottom: 30px;
+
+    font-size: 12px;
+    line-height: 1.7;
+
+    margin-bottom: 25px;
 }
+
+
+/* --------------------------------------------------
+   TABLEAU
+-------------------------------------------------- */
 
 #tableau-joueuses {
     width: 100%;
+    overflow-x: auto;
 }
 
 table {
     width: 100%;
+
     border-collapse: collapse;
+
+    font-size: 9px;
+
+    table-layout: fixed;
 }
 
 th,
 td {
-    padding: 6px 0;
+    padding: 5px 3px;
+    white-space: nowrap;
+}
+
+/* Nom de la joueuse à gauche */
+th:first-child,
+td:first-child {
     text-align: left;
 }
 
-th {
-    border-bottom: 1px solid black;
+/* Toutes les colonnes numériques à droite */
+th:not(:first-child),
+td:not(:first-child) {
+    text-align: right;
 }
 
-td {
-    border-bottom: 1px solid #ddd;
+/* Première colonne */
+th:first-child,
+td:first-child {
+    text-align: left;
+}
+
+/* Titres des colonnes */
+th {
+    font-weight: normal;
+
+    color: #555;
+}
+
+/* Lignes */
+tbody tr {
+    border-top: 1px solid #ddd;
 }
