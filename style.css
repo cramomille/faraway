@@ -1,0 +1,33 @@
+@font-face {
+    font-family: "Consolas";
+    src: url("public/font/Consolas.ttf") format("truetype");
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    width: 390px;
+    max-width: 100%;
+    min-height: 100vh;
+    margin: 0 auto;
+
+    font-family: "Consolas", monospace;
+    font-size: 16px;
+}
+
+main {
+    padding: 20px;
+}
+
+#stats {
+    white-space: pre-line;
+    line-height: 1.8;
+}

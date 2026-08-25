@@ -1,0 +1,353 @@
+---
+title: "FARAWAY"
+output: html_document
+---
+
+
+### Statistiques globales
+Chiffres résumant l'ensemble des scores et des parties effectuées
+```{r, echo=FALSE, results='asis', message=FALSE, warning=FALSE}
+
+# Lecture des parties --------------------------------------------------------
+fichiers <- list.files(
+  "data",
+  pattern = "^faraway_game_\\d{4}\\.csv$",
+  full.names = TRUE
+)
+
+dfs <- list()
+
+for (f in fichiers) {
+  
+  partie <- read.csv(
+    f,
+    stringsAsFactors = FALSE
+  )
+  
+  # Calcul du total
+  partie$total <- rowSums(
+    partie[, c("C8", "C7", "C6", "C5", "C4", "C3", "C2", "C1", "CS")],
+    na.rm = TRUE
+  )
+  
+  # Score maximal de cette partie
+  score_max_partie <- max(partie$total, na.rm = TRUE)
+  
+  # Une joueuse gagne lorsqu'elle possède le score maximal
+  partie$win <- partie$total == score_max_partie
+  
+  # Récupération du numéro de partie depuis le nom du fichier
+  partie$partie <- sub(
+    "^faraway_game_(\\d{4})\\.csv$",
+    "\\1",
+    basename(f)
+  )
+  
+  dfs[[f]] <- partie
+}
+
+parties <- do.call(rbind, dfs)
+rownames(parties) <- NULL
+
+
+# Statistiques globales ------------------------------------------------------
+nb_parties <- length(dfs)
+
+score_max <- max(parties$total)
+score_med <- median(parties$total)
+score_min <- min(parties$total)
+
+
+# Classement global ----------------------------------------------------------
+# Rangs : 1, 2, 2, 4, etc
+rangs <- rank(-parties$total, ties.method = "min")
+
+# Score minimal du Top
+score_min_top <- min(parties$total[rangs <= 50])
+
+
+# Affichage ------------------------------------------------------------------
+html <- paste0(
+  '<div style="display:flex; gap:20px; margin:20px 0 30px 0; flex-wrap:wrap;">',
+  
+  '<div style="flex:1; min-width:150px; padding:20px;
+          border:1px solid #ddd; border-radius:8px; text-align:center;">
+    <div style="font-size:14px; color:#666;">Nombre de parties</div>
+    <div style="font-size:28px; font-weight:bold;">',
+    nb_parties,
+    '</div>
+  </div>',
+  
+  '<div style="flex:1; min-width:150px; padding:20px;
+          border:1px solid #ddd; border-radius:8px; text-align:center;">
+    <div style="font-size:14px; color:#666;">Meilleur score</div>
+    <div style="font-size:28px; font-weight:bold;">',
+    score_max,
+    '</div>
+  </div>',
+  
+  '<div style="flex:1; min-width:150px; padding:20px;
+          border:1px solid #ddd; border-radius:8px; text-align:center;">
+    <div style="font-size:14px; color:#666;">Score médian</div>
+    <div style="font-size:28px; font-weight:bold;">',
+    score_med,
+    '</div>
+  </div>',
+  
+  '<div style="flex:1; min-width:150px; padding:20px;
+          border:1px solid #ddd; border-radius:8px; text-align:center;">
+    <div style="font-size:14px; color:#666;">Score minimal</div>
+    <div style="font-size:28px; font-weight:bold;">',
+    score_min,
+    '</div>
+  </div>',
+  
+  '<div style="flex:1; min-width:150px; padding:20px;
+          border:1px solid #ddd; border-radius:8px; text-align:center;">
+    <div style="font-size:14px; color:#666;">Score Top 50</div>
+    <div style="font-size:28px; font-weight:bold;">',
+    score_min_top,
+    '</div>
+  </div>',
+  
+  '</div>'
+)
+
+htmltools::HTML(html)
+```
+
+
+### Statistiques par joueuses
+Informations sur le nombre de parties auxquelles ont participé les joueuses, le pourcentage des parties qu'elles ont remportées, le nombre de leurs scores se trouvant dans le Top 20 global des scores, leurs scores maximal, minimal et médian
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# Classement global ----------------------------------------------------------
+# Rangs : 1, 2, 2, 4, etc.
+rangs <- rank(-parties$total, ties.method = "min")
+
+# Resultats par joueuse ------------------------------------------------------
+joueuses <- unique(parties$joueuse)
+
+resultats <- data.frame(
+  joueuse = joueuses,
+  nb_parties = sapply(joueuses, function(j) {
+    sum(parties$joueuse == j)
+  }),
+  nb_top20 = sapply(joueuses, function(j) {
+    sum(parties$joueuse == j & rangs <= 20)
+  }),
+  score_max = sapply(joueuses, function(j) {
+    max(parties$total[parties$joueuse == j])
+  }),
+  score_min = sapply(joueuses, function(j) {
+    min(parties$total[parties$joueuse == j])
+  }),
+  score_med = sapply(joueuses, function(j) {
+    median(parties$total[parties$joueuse == j])
+  }),
+  nb_win = sapply(joueuses, function(j) {
+    sum(
+      parties$joueuse == j &
+      parties$win,
+      na.rm = TRUE
+    )
+  })
+)
+
+# Garder uniquement les joueuses ayant fait plus de 2 parties ----------------
+resultats <- resultats[resultats$nb_parties > 2, ]
+
+# Tri initial par nombre de parties decroissant ------------------------------
+resultats <- resultats[order(-resultats$nb_parties), ]
+rownames(resultats) <- NULL
+
+# % de victoire --------------------------------------------------------------
+resultats$win_pct <- round(
+  100 * resultats$nb_win / resultats$nb_parties,
+  1
+)
+
+# Tableau interactif ---------------------------------------------------------
+DT::datatable(
+  resultats[, c(
+    "joueuse",
+    "nb_parties",
+    "win_pct",
+    "nb_top20",
+    "score_max",
+    "score_min",
+    "score_med"
+  )],
+  colnames = c(
+    "Joueuse",
+    "Nombre de parties",
+    "% de victoire",
+    "Scores dans le Top 20",
+    "Score max",
+    "Score min",
+    "Score médian"
+  ),
+  rownames = FALSE,
+  options = list(
+    dom = "t",
+    paging = FALSE
+  )
+)
+
+```
+
+
+### Meilleures scores réalisés
+Décompte des 20 meilleurs scores et les joueuses qui en sont à l'origine
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Classement global ----------------------------------------------------------
+parties_classement <- parties
+
+parties_classement$classement <- rank(
+  -parties_classement$total,
+  ties.method = "min",
+  na.last = "keep"
+)
+
+# Garder les résultats jusqu'au rang 20 --------------------------------------
+top20 <- parties_classement[
+  !is.na(parties_classement$classement) &
+  parties_classement$classement <= 20,
+  c("total", "classement", "joueuse")
+]
+
+# Trier par classement puis par score ----------------------------------------
+top20 <- top20[
+  order(top20$classement, -top20$total),
+]
+
+rownames(top20) <- NULL
+
+
+# Séparer en deux groupes de 10 ----------------------------------------------
+top10_1 <- top20[1:min(10, nrow(top20)), ]
+
+top10_2 <- if (nrow(top20) > 10) {
+  top20[11:min(20, nrow(top20)), ]
+} else {
+  top20[0, ]
+}
+
+
+# Compléter le deuxième tableau s'il manque des lignes -----------------------
+if (nrow(top10_1) < 10) {
+  top10_1[(nrow(top10_1) + 1):10, ] <- NA
+}
+
+if (nrow(top10_2) < 10) {
+  top10_2[(nrow(top10_2) + 1):10, ] <- NA
+}
+
+
+# Renommer les colonnes ------------------------------------------------------
+colnames(top10_1) <- c(
+  "Score",
+  "Classement",
+  "Joueuse"
+)
+
+colnames(top10_2) <- c(
+  "Score",
+  "Classement",
+  "Joueuse"
+)
+
+
+# Combiner les deux tableaux côte à côte -------------------------------------
+top20_double <- cbind(top10_1, top10_2)
+
+
+# Tableau --------------------------------------------------------------------
+DT::datatable(
+  top20_double,
+  rownames = FALSE,
+  options = list(
+    dom = "t",
+    paging = FALSE,
+    ordering = FALSE
+  )
+)
+
+```
+
+
+
+### Ensemble des scores
+```{r graphique_scores, echo=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2)
+
+# Données utilisées pour le graphique ----------------------------------------
+graphique <- parties[
+  parties$joueuse %in% resultats$joueuse,
+]
+
+# Ordre des joueuses : plus de parties -> moins de parties -------------------
+graphique$joueuse <- factor(
+  graphique$joueuse,
+  levels = rev(resultats$joueuse)
+)
+
+# Position verticale des points ----------------------------------------------
+graphique$position <- ave(
+  graphique$total,
+  graphique$joueuse,
+  graphique$total,
+  FUN = function(x) {
+    n <- length(x)
+    
+    if (n == 1) {
+      return(0)
+    }
+    
+    seq(
+      -(n - 1) / 2,
+      (n - 1) / 2,
+      length.out = n
+    )
+  }
+)
+
+# Espacement vertical entre les points ---------------------------------------
+ecart <- 0.17
+
+graphique$position <- graphique$position * ecart
+
+
+# Graphique ------------------------------------------------------------------
+ggplot(
+  graphique,
+  aes(
+    x = total,
+    y = as.numeric(joueuse) + position
+  )
+) +
+  geom_point(
+    size = 2.5,
+    alpha = 0.7
+  ) +
+  scale_y_continuous(
+    breaks = seq_along(levels(graphique$joueuse)),
+    labels = levels(graphique$joueuse)
+  ) +
+  scale_x_continuous(
+    breaks = seq(
+      floor(min(graphique$total) / 10) * 10,
+      ceiling(max(graphique$total) / 10) * 10,
+      by = 10
+    )
+  ) +
+  labs(
+    x = NULL,
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+```
