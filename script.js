@@ -303,10 +303,10 @@ async function afficherStatistiques() {
 
         document.getElementById("stats").textContent =
 `Nombre de parties : ${nombreDeParties}
-Nombre de scores : ${nombreDeScores}
-Score maximum : ${scoreMaximum}
-Score minimum : ${scoreMinimum}
-Score médian : ${scoreMedian}`;
+Nombre de scores   : ${nombreDeScores}
+Score maximum      : ${scoreMaximum}
+Score minimum      : ${scoreMinimum}
+Score médian       : ${scoreMedian}`;
 
 
         // ------------------------------------------
