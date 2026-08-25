@@ -8,7 +8,7 @@
 }
 
 html {
-    font-size: 14px;
+    font-size: 10px;
 }
 
 body {
@@ -70,7 +70,7 @@ table {
 
     border-collapse: collapse;
 
-    font-size: 9px;
+    font-size: 10px;
 
     table-layout: fixed;
 }
@@ -103,7 +103,7 @@ td:first-child {
 th {
     font-weight: normal;
 
-    color: #555;
+    color: #b297c7;
 }
 
 /* Lignes */
