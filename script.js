@@ -280,13 +280,13 @@ function afficherTableauJoueuses(statistiques) {
     const ligneEntete = document.createElement("tr");
 
     const entetes = [
-        "<br> joueuse",
-        "nb <br> parties",
-        "% <br> victoires",
+        "<br> player",
+        "nb <br> games",
+        "% <br> win",
         "nb <br> top20",
-        "score <br> max",
-        "score <br> min",
-        "score <br> médian"
+        "max <br> score",
+        "min <br> score",
+        "median <br> score"
     ];
 
     entetes.forEach(texte => {
