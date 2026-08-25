@@ -33,6 +33,10 @@ main {
     margin-bottom: 30px;
 }
 
+#tableau-joueuses {
+    width: 100%;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;

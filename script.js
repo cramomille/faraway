@@ -189,35 +189,59 @@ function calculerStatistiquesJoueuses() {
 
 function afficherTableauJoueuses(statistiques) {
 
-    let html = `
-        <table>
-            <thead>
-                <tr>
-                    <th>Joueuse</th>
-                    <th>Parties</th>
-                    <th>Meilleur score</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
+    const tableau = document.createElement("table");
+
+    const thead = document.createElement("thead");
+    const ligneEntete = document.createElement("tr");
+
+    const entetes = [
+        "Joueuse",
+        "Parties",
+        "Meilleur score"
+    ];
+
+    entetes.forEach(texte => {
+
+        const cellule = document.createElement("th");
+
+        cellule.textContent = texte;
+
+        ligneEntete.appendChild(cellule);
+    });
+
+    thead.appendChild(ligneEntete);
+    tableau.appendChild(thead);
+
+
+    const tbody = document.createElement("tbody");
 
     statistiques.forEach(joueuse => {
 
-        html += `
-            <tr>
-                <td>${joueuse.nom}</td>
-                <td>${joueuse.parties}</td>
-                <td>${joueuse.meilleurScore}</td>
-            </tr>
-        `;
+        const ligne = document.createElement("tr");
+
+
+        const celluleNom = document.createElement("td");
+        celluleNom.textContent = joueuse.nom;
+
+
+        const celluleParties = document.createElement("td");
+        celluleParties.textContent = joueuse.parties;
+
+
+        const celluleMeilleurScore = document.createElement("td");
+        celluleMeilleurScore.textContent = joueuse.meilleurScore;
+
+
+        ligne.appendChild(celluleNom);
+        ligne.appendChild(celluleParties);
+        ligne.appendChild(celluleMeilleurScore);
+
+        tbody.appendChild(ligne);
     });
 
-    html += `
-            </tbody>
-        </table>
-    `;
+    tableau.appendChild(tbody);
 
-    document.getElementById("tableau-joueuses").innerHTML = html;
+    document.getElementById("tableau-joueuses").appendChild(tableau);
 }
 
 
@@ -279,10 +303,10 @@ async function afficherStatistiques() {
 
         document.getElementById("stats").textContent =
 `Nombre de parties : ${nombreDeParties}
-Nombre de scores   : ${nombreDeScores}
-Score maximum      : ${scoreMaximum}
-Score minimum      : ${scoreMinimum}
-Score médian       : ${scoreMedian}`;
+Nombre de scores : ${nombreDeScores}
+Score maximum : ${scoreMaximum}
+Score minimum : ${scoreMinimum}
+Score médian : ${scoreMedian}`;
 
 
         // ------------------------------------------
