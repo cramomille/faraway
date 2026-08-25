@@ -30,4 +30,24 @@ main {
 #stats {
     white-space: pre-line;
     line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 6px 0;
+    text-align: left;
+}
+
+th {
+    border-bottom: 1px solid black;
+}
+
+td {
+    border-bottom: 1px solid #ddd;
 }
