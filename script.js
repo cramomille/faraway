@@ -145,41 +145,122 @@ function calculerStatistiquesJoueuses() {
 
     const joueuses = {};
 
+    // Regroupement des scores par joueuse
     toutesLesLignes.forEach(joueur => {
 
         const nom = joueur.joueuse;
         const score = calculerScore(joueur);
 
         if (!joueuses[nom]) {
-
             joueuses[nom] = {
                 nom: nom,
-                parties: 0,
-                meilleurScore: 0
+                scores: [],
+                victoires: 0
             };
         }
 
-        joueuses[nom].parties++;
-
-        if (score > joueuses[nom].meilleurScore) {
-            joueuses[nom].meilleurScore = score;
-        }
+        joueuses[nom].scores.push(score);
     });
 
-    // Transformation en tableau
-    return Object.values(joueuses)
 
-        // Tri par nombre de parties décroissant
-        .sort((a, b) => {
+    // --------------------------------------------------
+    // Déterminer les victoires
+    // --------------------------------------------------
 
-            if (b.parties !== a.parties) {
-                return b.parties - a.parties;
+    const parties = {};
+
+    toutesLesLignes.forEach(joueur => {
+
+        const score = calculerScore(joueur);
+
+        if (!parties[joueur.partie]) {
+            parties[joueur.partie] = [];
+        }
+
+        parties[joueur.partie].push({
+            nom: joueur.joueuse,
+            score: score
+        });
+    });
+
+
+    Object.values(parties).forEach(partie => {
+
+        const meilleurScore = Math.max(
+            ...partie.map(joueur => joueur.score)
+        );
+
+        partie.forEach(joueur => {
+
+            if (joueur.score === meilleurScore) {
+                joueuses[joueur.nom].victoires++;
             }
 
-            // En cas d'égalité :
-            // meilleur score décroissant
-            return b.meilleurScore - a.meilleurScore;
         });
+    });
+
+
+    // --------------------------------------------------
+    // Déterminer le Top 20 global
+    // --------------------------------------------------
+
+    const tousLesScores = toutesLesLignes
+        .map(joueur => calculerScore(joueur))
+        .sort((a, b) => b - a);
+
+    const scoreLimiteTop20 =
+        tousLesScores[Math.min(19, tousLesScores.length - 1)];
+
+
+    // --------------------------------------------------
+    // Statistiques de chaque joueuse
+    // --------------------------------------------------
+
+    const statistiques = Object.values(joueuses)
+        .map(joueuse => {
+
+            const scores = joueuse.scores;
+
+            return {
+                nom: joueuse.nom,
+
+                parties: scores.length,
+
+                pourcentageVictoire:
+                    (joueuse.victoires / scores.length) * 100,
+
+                scoresTop20:
+                    scores.filter(
+                        score => score >= scoreLimiteTop20
+                    ).length,
+
+                meilleurScore:
+                    Math.max(...scores),
+
+                scoreMin:
+                    Math.min(...scores),
+
+                scoreMedian:
+                    calculerMediane(scores)
+            };
+        })
+
+        // Uniquement les joueuses ayant plus de 3 parties
+        .filter(joueuse => joueuse.parties > 3);
+
+
+    // --------------------------------------------------
+    // Tri par nombre de parties décroissant
+    // --------------------------------------------------
+
+    statistiques.sort((a, b) => {
+
+        return b.parties - a.parties;
+
+    });
+
+
+    return statistiques;
 }
 
 
@@ -191,13 +272,21 @@ function afficherTableauJoueuses(statistiques) {
 
     const tableau = document.createElement("table");
 
+    // --------------------------------------------------
+    // En-têtes
+    // --------------------------------------------------
+
     const thead = document.createElement("thead");
     const ligneEntete = document.createElement("tr");
 
     const entetes = [
-        "Joueuse",
-        "Parties",
-        "Meilleur score"
+        "joueuse",
+        "nb parties",
+        "% victoires",
+        "nb top 20",
+        "score max",
+        "score min",
+        "score med"
     ];
 
     entetes.forEach(texte => {
@@ -213,37 +302,52 @@ function afficherTableauJoueuses(statistiques) {
     tableau.appendChild(thead);
 
 
+    // --------------------------------------------------
+    // Lignes
+    // --------------------------------------------------
+
     const tbody = document.createElement("tbody");
 
     statistiques.forEach(joueuse => {
 
         const ligne = document.createElement("tr");
 
+        const valeurs = [
+            joueuse.nom,
+            joueuse.parties,
+            `${joueuse.pourcentageVictoire.toFixed(1)} %`,
+            joueuse.scoresTop20,
+            joueuse.meilleurScore,
+            joueuse.scoreMin,
+            joueuse.scoreMedian
+        ];
 
-        const celluleNom = document.createElement("td");
-        celluleNom.textContent = joueuse.nom;
+        valeurs.forEach(valeur => {
 
+            const cellule = document.createElement("td");
 
-        const celluleParties = document.createElement("td");
-        celluleParties.textContent = joueuse.parties;
+            cellule.textContent = valeur;
 
-
-        const celluleMeilleurScore = document.createElement("td");
-        celluleMeilleurScore.textContent = joueuse.meilleurScore;
-
-
-        ligne.appendChild(celluleNom);
-        ligne.appendChild(celluleParties);
-        ligne.appendChild(celluleMeilleurScore);
+            ligne.appendChild(cellule);
+        });
 
         tbody.appendChild(ligne);
     });
 
     tableau.appendChild(tbody);
 
-    document.getElementById("tableau-joueuses").appendChild(tableau);
-}
 
+    // --------------------------------------------------
+    // Affichage
+    // --------------------------------------------------
+
+    const conteneur =
+        document.getElementById("tableau-joueuses");
+
+    conteneur.innerHTML = "";
+
+    conteneur.appendChild(tableau);
+}
 
 // --------------------------------------------------
 // Statistiques générales
@@ -302,11 +406,11 @@ async function afficherStatistiques() {
         // ------------------------------------------
 
         document.getElementById("stats").textContent =
-`Nombre de parties : ${nombreDeParties}
-Nombre de scores : ${nombreDeScores}
-Score maximum : ${scoreMaximum}
-Score minimum : ${scoreMinimum}
-Score médian : ${scoreMedian}`;
+            `Nombre de parties : ${nombreDeParties}
+             Nombre de scores :  ${nombreDeScores}
+             Score maximum :     ${scoreMaximum}
+             Score minimum :     ${scoreMinimum}
+             Score médian :      ${scoreMedian}`;
 
 
         // ------------------------------------------
