@@ -54,6 +54,12 @@ h1 {
     margin-bottom: 25px;
 }
 
+#stats span {
+    display: inline-block;
+    width: 4ch;
+    text-align: right;
+}
+
 
 /* --------------------------------------------------
    TABLEAU
