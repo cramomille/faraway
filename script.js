@@ -280,15 +280,15 @@ function afficherTableauScores() {
     // --------------------------------------------------
 
     const colonnes = [
-        ["rank", "col-right"],
+        ["rank", "col-left"],
         ["player", "col-left"],
         ["score", "col-right"],
-        ["new", "col-left"],
+        ["new", "col-right"],
 
-        ["rank", "col-right"],
+        ["rank", "col-left"],
         ["player", "col-left"],
         ["score", "col-right"],
-        ["new", "col-left"]
+        ["new", "col-right"]
     ];
 
 
@@ -336,8 +336,8 @@ function afficherTableauScores() {
 
             const valeurs = [
                 joueur.rang,
-                joueur.score,
                 joueur.joueuse,
+                joueur.score,
                 joueur.partie === dernierePartie
                     ? "x"
                     : ""
