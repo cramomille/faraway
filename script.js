@@ -531,10 +531,10 @@ function afficherTableauScores() {
     const ligneEntete = document.createElement("tr");
 
     const entetes = [
-        "player",
-        "score",
         "rank",
-        "trend"
+        "trend",
+        "score",
+        "player"
     ];
 
     entetes.forEach(texte => {
@@ -638,7 +638,7 @@ function afficherTableauScores() {
 
                 } else {
 
-                    celluleEvolution.textContent = ".";
+                    celluleEvolution.textContent = "";
                 }
             }
         }
