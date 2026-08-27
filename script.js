@@ -576,13 +576,13 @@ function afficherTableauScores() {
 
     const entetes = [
         "rank",
-        "trend",
         "score",
         "player",
-        "rank",
         "trend",
+        "rank",
         "score",
-        "player"
+        "player,"
+        "trend"
     ];
 
 
@@ -706,9 +706,9 @@ function afficherTableauScores() {
 
 
             ligne.appendChild(celluleClassement);
-            ligne.appendChild(celluleEvolution);
             ligne.appendChild(celluleScore);
             ligne.appendChild(celluleJoueuse);
+            ligne.appendChild(celluleEvolution);
 
         }
 
@@ -724,7 +724,9 @@ function afficherTableauScores() {
         // Ajouter droite
         // --------------------------------------------------
 
-        ajouterJoueur(joueurDroit);
+        if (joueurDroit && joueurDroit.id !== joueurGauche.id) {
+            ajouterJoueur(joueurDroit);
+        }
 
 
         tbody.appendChild(ligne);
