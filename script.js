@@ -349,6 +349,125 @@ function afficherTableauJoueuses(statistiques) {
     conteneur.appendChild(tableau);
 }
 
+
+// --------------------------------------------------
+// Affichage du classement des scores
+// --------------------------------------------------
+
+function afficherTableauScores() {
+
+    // Création de la liste de tous les scores
+    const scores = toutesLesLignes.map(joueur => {
+
+        return {
+            joueuse: joueur.joueuse,
+            score: calculerScore(joueur)
+        };
+
+    });
+
+
+    // Tri des scores du plus grand au plus petit
+    scores.sort((a, b) => b.score - a.score);
+
+
+    // Création du tableau
+    const tableau = document.createElement("table");
+
+
+    // --------------------------------------------------
+    // En-têtes
+    // --------------------------------------------------
+
+    const thead = document.createElement("thead");
+    const ligneEntete = document.createElement("tr");
+
+    const entetes = [
+        "rank",
+        "score",
+        "player"
+    ];
+
+    entetes.forEach(texte => {
+
+        const cellule = document.createElement("th");
+
+        cellule.textContent = texte;
+
+        ligneEntete.appendChild(cellule);
+
+    });
+
+    thead.appendChild(ligneEntete);
+    tableau.appendChild(thead);
+
+
+    // --------------------------------------------------
+    // Lignes
+    // --------------------------------------------------
+
+    const tbody = document.createElement("tbody");
+
+    let classement = 1;
+
+    scores.forEach((joueur, index) => {
+
+        // Si le score est différent du précédent,
+        // le classement correspond à la position réelle.
+        if (
+            index === 0 ||
+            joueur.score !== scores[index - 1].score
+        ) {
+            classement = index + 1;
+        }
+
+
+        const ligne = document.createElement("tr");
+
+
+        const celluleClassement =
+            document.createElement("td");
+
+        celluleClassement.textContent = classement;
+
+
+        const celluleScore =
+            document.createElement("td");
+
+        celluleScore.textContent = joueur.score;
+
+
+        const celluleJoueuse =
+            document.createElement("td");
+
+        celluleJoueuse.textContent = joueur.joueuse;
+
+
+        ligne.appendChild(celluleClassement);
+        ligne.appendChild(celluleScore);
+        ligne.appendChild(celluleJoueuse);
+
+        tbody.appendChild(ligne);
+
+    });
+
+
+    tableau.appendChild(tbody);
+
+
+    // --------------------------------------------------
+    // Affichage
+    // --------------------------------------------------
+
+    const conteneur =
+        document.getElementById("tableau-scores");
+
+    conteneur.innerHTML = "";
+
+    conteneur.appendChild(tableau);
+}
+
+
 // --------------------------------------------------
 // Statistiques générales
 // --------------------------------------------------
@@ -420,10 +539,11 @@ async function afficherStatistiques() {
         const statistiquesJoueuses =
             calculerStatistiquesJoueuses();
 
-
         afficherTableauJoueuses(
             statistiquesJoueuses
         );
+
+        afficherTableauScores();
 
 
     } catch (erreur) {
