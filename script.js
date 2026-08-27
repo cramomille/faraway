@@ -355,9 +355,7 @@ function afficherTableauScores() {
                 }
 
                 ligne.appendChild(cellule);
-
             });
-
         });
 
 
