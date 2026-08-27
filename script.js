@@ -581,7 +581,7 @@ function afficherTableauScores() {
         "trend",
         "rank",
         "score",
-        "player,"
+        "player",
         "trend"
     ];
 
