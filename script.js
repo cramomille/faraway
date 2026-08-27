@@ -354,24 +354,172 @@ function afficherTableauJoueuses(statistiques) {
 // Affichage du classement des scores
 // --------------------------------------------------
 
+// --------------------------------------------------
+// Affichage du classement des scores
+// --------------------------------------------------
+
 function afficherTableauScores() {
 
-    // Création de la liste de tous les scores
-    const scores = toutesLesLignes.map(joueur => {
+    // --------------------------------------------------
+    // Identifier la dernière partie
+    // --------------------------------------------------
+
+    const parties = [...new Set(
+        toutesLesLignes.map(joueur => joueur.partie)
+    )].sort();
+
+    const dernierePartie = parties.at(-1);
+
+
+    // --------------------------------------------------
+    // Création de tous les scores
+    // --------------------------------------------------
+
+    const scores = toutesLesLignes.map((joueur, index) => {
 
         return {
+            id: `${joueur.partie}_${index}`,
             joueuse: joueur.joueuse,
-            score: calculerScore(joueur)
+            score: calculerScore(joueur),
+            partie: joueur.partie,
+            ordre: index
         };
 
     });
 
 
-    // Tri des scores du plus grand au plus petit
-    scores.sort((a, b) => b.score - a.score);
+    // --------------------------------------------------
+    // Classement d'une liste de scores
+    // --------------------------------------------------
+
+    function classerScores(liste) {
+
+        // Copie pour ne pas modifier la liste originale
+        const classement = [...liste];
+
+        // Tri du meilleur score au plus faible.
+        // En cas d'égalité, on conserve l'ordre chronologique.
+        classement.sort((a, b) => {
+
+            if (b.score !== a.score) {
+                return b.score - a.score;
+            }
+
+            return a.ordre - b.ordre;
+        });
 
 
+        let rang = 1;
+
+        classement.forEach((joueur, index) => {
+
+            // Les égalités ont le même rang.
+            // Le rang suivant saute les positions occupées.
+            if (
+                index === 0 ||
+                joueur.score !== classement[index - 1].score
+            ) {
+                rang = index + 1;
+            }
+
+            joueur.rang = rang;
+
+        });
+
+        return classement;
+    }
+
+
+    // --------------------------------------------------
+    // Ancien classement
+    // --------------------------------------------------
+
+    const anciensScores = scores.filter(
+        joueur => joueur.partie !== dernierePartie
+    );
+
+    const ancienClassement =
+        classerScores(anciensScores);
+
+
+    // --------------------------------------------------
+    // Nouveau classement
+    // --------------------------------------------------
+
+    const classement =
+        classerScores(scores);
+
+
+    // --------------------------------------------------
+    // Associer les anciens scores aux nouveaux
+    // --------------------------------------------------
+    //
+    // Pour les égalités, on associe les scores dans
+    // leur ordre chronologique.
+    //
+    // Exemple :
+    //
+    // ancien :
+    // 3  90
+    // 3  90
+    //
+    // nouveau :
+    // 3  90
+    // 3  90
+    // 3  90 new
+    //
+    // Résultat :
+    // 3  90 =
+    // 3  90 =
+    // 3  90 new
+    //
+    // --------------------------------------------------
+
+    const anciensParScore = {};
+
+    ancienClassement.forEach(joueur => {
+
+        if (!anciensParScore[joueur.score]) {
+            anciensParScore[joueur.score] = [];
+        }
+
+        anciensParScore[joueur.score].push(joueur);
+
+    });
+
+
+    const correspondances = new Map();
+
+
+    // Pour chaque score actuel, on récupère
+    // le plus ancien score correspondant.
+    classement.forEach(joueur => {
+
+        if (joueur.partie === dernierePartie) {
+            return;
+        }
+
+        const disponibles =
+            anciensParScore[joueur.score];
+
+        if (disponibles && disponibles.length > 0) {
+
+            const ancien =
+                disponibles.shift();
+
+            correspondances.set(
+                joueur.id,
+                ancien.rang
+            );
+        }
+
+    });
+
+
+    // --------------------------------------------------
     // Création du tableau
+    // --------------------------------------------------
+
     const tableau = document.createElement("table");
 
 
@@ -385,7 +533,8 @@ function afficherTableauScores() {
     const entetes = [
         "rank",
         "score",
-        "player"
+        "player",
+        "évolution"
     ];
 
     entetes.forEach(texte => {
@@ -408,44 +557,100 @@ function afficherTableauScores() {
 
     const tbody = document.createElement("tbody");
 
-    let classement = 1;
 
-    scores.forEach((joueur, index) => {
-
-        // Si le score est différent du précédent,
-        // le classement correspond à la position réelle.
-        if (
-            index === 0 ||
-            joueur.score !== scores[index - 1].score
-        ) {
-            classement = index + 1;
-        }
-
+    classement.forEach(joueur => {
 
         const ligne = document.createElement("tr");
 
 
+        // ----------------------------------------------
+        // Rank
+        // ----------------------------------------------
+
         const celluleClassement =
             document.createElement("td");
 
-        celluleClassement.textContent = classement;
+        celluleClassement.textContent =
+            joueur.rang;
 
+
+        // ----------------------------------------------
+        // Score
+        // ----------------------------------------------
 
         const celluleScore =
             document.createElement("td");
 
-        celluleScore.textContent = joueur.score;
+        celluleScore.textContent =
+            joueur.score;
 
+
+        // ----------------------------------------------
+        // Joueuse
+        // ----------------------------------------------
 
         const celluleJoueuse =
             document.createElement("td");
 
-        celluleJoueuse.textContent = joueur.joueuse;
+        celluleJoueuse.textContent =
+            joueur.joueuse;
 
+
+        // ----------------------------------------------
+        // Évolution
+        // ----------------------------------------------
+
+        const celluleEvolution =
+            document.createElement("td");
+
+
+        if (joueur.partie === dernierePartie) {
+
+            // Score réalisé lors de la dernière partie
+            celluleEvolution.textContent = "new";
+
+        } else {
+
+            const ancienRang =
+                correspondances.get(joueur.id);
+
+            if (ancienRang === undefined) {
+
+                celluleEvolution.textContent = "new";
+
+            } else {
+
+                const evolution =
+                    ancienRang - joueur.rang;
+
+
+                if (evolution > 0) {
+
+                    celluleEvolution.textContent =
+                        `+${evolution}`;
+
+                } else if (evolution < 0) {
+
+                    celluleEvolution.textContent =
+                        `${evolution}`;
+
+                } else {
+
+                    celluleEvolution.textContent =
+                        "=";
+                }
+            }
+        }
+
+
+        // ----------------------------------------------
+        // Ajout de la ligne
+        // ----------------------------------------------
 
         ligne.appendChild(celluleClassement);
         ligne.appendChild(celluleScore);
         ligne.appendChild(celluleJoueuse);
+        ligne.appendChild(celluleEvolution);
 
         tbody.appendChild(ligne);
 
