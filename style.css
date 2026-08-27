@@ -28,10 +28,6 @@ body {
     overflow-x: hidden;
 }
 
-main {
-    width: 100%;
-}
-
 h1 {
     margin: 0 0 20px 0;
 
@@ -69,12 +65,10 @@ h2 {
 -------------------------------------------------- */
 
 #tableau-joueuses {
-    width: 100%;
     overflow-x: auto;
 }
 
 #tableau-scores {
-    width: 100%;
     height: 225px;
     overflow-y: auto;
 }
@@ -93,19 +87,16 @@ td {
 }
 
 /* Nom de la joueuse à gauche */
-th:first-child,
 td:first-child {
     text-align: left;
 }
 
 /* Toutes les colonnes numériques à droite */
-th:not(:first-child),
 td:not(:first-child) {
     text-align: right;
 }
 
 /* Première colonne */
-th:first-child,
 td:first-child {
     text-align: left;
 }
@@ -125,10 +116,3 @@ tbody tr {
     color: #58b999;
 }
 
-.trend-up {
-    color: #58b999;
-}
-
-.trend-down {
-    color: #ef776e;
-}
