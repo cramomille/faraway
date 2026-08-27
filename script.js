@@ -280,15 +280,15 @@ function afficherTableauScores() {
     // --------------------------------------------------
 
     const colonnes = [
-        ["rank", "col-left"],
+        ["new", "col-left"],
+        ["rank", "col-right"],
         ["player", "col-left"],
         ["score", "col-right"],
-        ["new", "col-right"],
 
-        ["rank", "col-left"],
+        ["new", "col-left"],
+        ["rank", "col-right"],
         ["player", "col-left"],
-        ["score", "col-right"],
-        ["new", "col-right"]
+        ["score", "col-right"]
     ];
 
 
@@ -335,12 +335,12 @@ function afficherTableauScores() {
         joueurs.forEach(joueur => {
 
             const valeurs = [
-                joueur.rang,
-                joueur.joueuse,
-                joueur.score,
                 joueur.partie === dernierePartie
                     ? "x"
                     : ""
+                joueur.rang,
+                joueur.joueuse,
+                joueur.score,
             ];
 
             valeurs.forEach((valeur, index) => {
