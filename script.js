@@ -626,18 +626,17 @@ function afficherTableauScores() {
 
                 if (evolution > 0) {
 
-                    celluleEvolution.textContent =
-                        `+${evolution}`;
+                    celluleEvolution.textContent = `+${evolution}`;
+                    celluleEvolution.style.color = "#58b999";
 
                 } else if (evolution < 0) {
 
-                    celluleEvolution.textContent =
-                        `${evolution}`;
+                    celluleEvolution.textContent = `${evolution}`;
+                    celluleEvolution.style.color = "#ef776e";
 
                 } else {
 
-                    celluleEvolution.textContent =
-                        "=";
+                    celluleEvolution.textContent = "";
                 }
             }
         }
