@@ -166,42 +166,11 @@ function afficherTableauScores() {
     }
 
     const classement = classer(scores);
-    const ancienClassement = classer(
-        scores.filter(j => j.partie !== dernierePartie)
-    );
-
-    // Association score → anciens rangs
-    const anciensParScore = Object.groupBy(
-        ancienClassement,
-        j => j.score
-    );
-
-    const correspondances = new Map();
-
-    classement.forEach(joueur => {
-        if (joueur.partie === dernierePartie) return;
-
-        const anciens = anciensParScore[joueur.score];
-        if (anciens?.length) {
-            correspondances.set(joueur.id, anciens.shift().rang);
-        }
-    });
 
     function tendance(joueur) {
-        if (joueur.partie === dernierePartie)
-            return ["new", "trend-new"];
-
-        const ancien = correspondances.get(joueur.id);
-        if (ancien === undefined)
-            return ["new", "trend-new"];
-
-        const evolution = ancien - joueur.rang;
-
-        if (!evolution) return ["", ""];
-        return [
-            evolution > 0 ? `+${evolution}` : `${evolution}`,
-            evolution > 0 ? "trend-up" : "trend-down"
-        ];
+        return joueur.partie === dernierePartie
+            ? ["new", "trend-new"]
+            : ["", ""];
     }
 
     const lignes = [];
