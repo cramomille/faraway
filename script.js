@@ -351,7 +351,7 @@ function afficherTableauJoueuses(statistiques) {
 
 
 // --------------------------------------------------
-// Affichage du classement des scores
+// Affichage du classement des scores en double colonne
 // --------------------------------------------------
 
 function afficherTableauScores() {
@@ -392,15 +392,17 @@ function afficherTableauScores() {
 
         const classement = [...liste];
 
-        // Score décroissant
-        // En cas d'égalité : le plus ancien d'abord
         classement.sort((a, b) => {
 
+            // Score décroissant
             if (b.score !== a.score) {
                 return b.score - a.score;
             }
 
+            // En cas d'égalité :
+            // le plus ancien apparaît en premier
             return a.ordre - b.ordre;
+
         });
 
 
@@ -408,7 +410,6 @@ function afficherTableauScores() {
 
         classement.forEach((joueur, index) => {
 
-            // Les égalités ont le même rang
             if (
                 index === 0 ||
                 joueur.score !== classement[index - 1].score
@@ -476,30 +477,33 @@ function afficherTableauScores() {
 
         if (disponibles && disponibles.length > 0) {
 
-            const ancien =
-                disponibles.shift();
+            // On prend toujours le plus ancien
+            const ancien = disponibles.shift();
 
             correspondances.set(
                 joueur.id,
                 ancien.rang
             );
+
         }
 
     });
 
 
     // --------------------------------------------------
-    // Calcul du trend
+    // Calcul de la tendance
     // --------------------------------------------------
 
-    function obtenirTrend(joueur) {
+    function obtenirTendance(joueur) {
 
         // Nouveau score
         if (joueur.partie === dernierePartie) {
+
             return {
                 texte: "new",
                 classe: "trend-new"
             };
+
         }
 
 
@@ -509,15 +513,28 @@ function afficherTableauScores() {
 
         // Aucun ancien score correspondant
         if (ancienRang === undefined) {
+
             return {
                 texte: "new",
                 classe: "trend-new"
             };
+
         }
 
 
         const evolution =
             ancienRang - joueur.rang;
+
+
+        // Même rang
+        if (evolution === 0) {
+
+            return {
+                texte: "",
+                classe: ""
+            };
+
+        }
 
 
         // Monte dans le classement
@@ -532,21 +549,11 @@ function afficherTableauScores() {
 
 
         // Descend dans le classement
-        if (evolution < 0) {
-
-            return {
-                texte: `${evolution}`,
-                classe: "trend-down"
-            };
-
-        }
-
-
-        // Même rang
         return {
-            texte: "",
-            classe: "trend-equal"
+            texte: `${evolution}`,
+            classe: "trend-down"
         };
+
     }
 
 
@@ -562,18 +569,22 @@ function afficherTableauScores() {
     // --------------------------------------------------
 
     const thead = document.createElement("thead");
-    const ligneEntete = document.createElement("tr");
+
+    const ligneEntete =
+        document.createElement("tr");
+
 
     const entetes = [
         "rank",
+        "trend",
         "score",
         "player",
-        "trend",
         "rank",
+        "trend",
         "score",
         "player"
-        "trend",
     ];
+
 
     entetes.forEach(texte => {
 
@@ -586,147 +597,138 @@ function afficherTableauScores() {
 
     });
 
+
     thead.appendChild(ligneEntete);
     tableau.appendChild(thead);
 
 
     // --------------------------------------------------
-    // Corps du tableau
+    // Création des deux côtés
     // --------------------------------------------------
 
-    const tbody = document.createElement("tbody");
+    const tbody =
+        document.createElement("tbody");
 
 
-    // Une ligne contient un score du haut
-    // et un score du bas.
-    //
-    // Exemple :
-    //
-    // ligne 0 :
-    // meilleur score       pire score
-    //
-    // ligne 1 :
-    // 2e meilleur          2e pire
-    //
-    // etc.
+    const nombreDeLignes =
+        Math.ceil(classement.length / 2);
 
-    for (let index = 0; index < classement.length; index++) {
 
-        const gauche =
-            classement[index];
-
-        const droite =
-            classement[classement.length - 1 - index];
-
+    for (let i = 0; i < nombreDeLignes; i++) {
 
         const ligne =
             document.createElement("tr");
 
 
-        // ==================================================
-        // GAUCHE
-        // ==================================================
+        // --------------------------------------------------
+        // Côté gauche :
+        // meilleur score -> vers le milieu
+        // --------------------------------------------------
 
-        const trendGauche =
-            obtenirTrend(gauche);
-
-
-        // Rank
-        const rankGauche =
-            document.createElement("td");
-
-        rankGauche.textContent =
-            gauche.rang;
+        const joueurGauche =
+            classement[i];
 
 
-        // Trend
-        const trendCelluleGauche =
-            document.createElement("td");
+        // --------------------------------------------------
+        // Côté droit :
+        // pire score -> vers le milieu
+        // --------------------------------------------------
 
-        trendCelluleGauche.textContent =
-            trendGauche.texte;
+        const indexDroit =
+            classement.length - 1 - i;
 
-        trendCelluleGauche.classList.add(
-            trendGauche.classe
-        );
-
-
-        // Score
-        const scoreGauche =
-            document.createElement("td");
-
-        scoreGauche.textContent =
-            gauche.score;
+        const joueurDroit =
+            classement[indexDroit];
 
 
-        // Player
-        const playerGauche =
-            document.createElement("td");
+        // --------------------------------------------------
+        // Fonction pour créer les cellules d'un joueur
+        // --------------------------------------------------
 
-        playerGauche.textContent =
-            gauche.joueuse;
+        function ajouterJoueur(joueur) {
 
+            if (!joueur) {
 
-        // ==================================================
-        // DROITE
-        // ==================================================
+                for (let j = 0; j < 4; j++) {
 
-        const trendDroite =
-            obtenirTrend(droite);
+                    const cellule =
+                        document.createElement("td");
 
+                    cellule.textContent = "";
 
-        // Rank
-        const rankDroite =
-            document.createElement("td");
+                    ligne.appendChild(cellule);
 
-        rankDroite.textContent =
-            droite.rang;
+                }
 
-
-        // Trend
-        const trendCelluleDroite =
-            document.createElement("td");
-
-        trendCelluleDroite.textContent =
-            trendDroite.texte;
-
-        trendCelluleDroite.classList.add(
-            trendDroite.classe
-        );
+                return;
+            }
 
 
-        // Score
-        const scoreDroite =
-            document.createElement("td");
+            // Rank
+            const celluleClassement =
+                document.createElement("td");
 
-        scoreDroite.textContent =
-            droite.score;
-
-
-        // Player
-        const playerDroite =
-            document.createElement("td");
-
-        playerDroite.textContent =
-            droite.joueuse;
+            celluleClassement.textContent =
+                joueur.rang;
 
 
-        // ==================================================
-        // Ajout des cellules
-        // ==================================================
+            // Trend
+            const celluleEvolution =
+                document.createElement("td");
 
-        ligne.appendChild(rankGauche);
-        ligne.appendChild(scoreGauche);
-        ligne.appendChild(playerGauche);
-        ligne.appendChild(trendCelluleGauche);
+            const tendance =
+                obtenirTendance(joueur);
 
-        ligne.appendChild(rankDroite);
-        ligne.appendChild(scoreDroite);
-        ligne.appendChild(playerDroite);
-        ligne.appendChild(trendCelluleDroite);
+            celluleEvolution.textContent =
+                tendance.texte;
+
+            if (tendance.classe) {
+                celluleEvolution.classList.add(
+                    tendance.classe
+                );
+            }
+
+
+            // Score
+            const celluleScore =
+                document.createElement("td");
+
+            celluleScore.textContent =
+                joueur.score;
+
+
+            // Player
+            const celluleJoueuse =
+                document.createElement("td");
+
+            celluleJoueuse.textContent =
+                joueur.joueuse;
+
+
+            ligne.appendChild(celluleClassement);
+            ligne.appendChild(celluleEvolution);
+            ligne.appendChild(celluleScore);
+            ligne.appendChild(celluleJoueuse);
+
+        }
+
+
+        // --------------------------------------------------
+        // Ajouter gauche
+        // --------------------------------------------------
+
+        ajouterJoueur(joueurGauche);
+
+
+        // --------------------------------------------------
+        // Ajouter droite
+        // --------------------------------------------------
+
+        ajouterJoueur(joueurDroit);
 
 
         tbody.appendChild(ligne);
+
     }
 
 
@@ -743,6 +745,7 @@ function afficherTableauScores() {
     conteneur.innerHTML = "";
 
     conteneur.appendChild(tableau);
+
 }
 
 
