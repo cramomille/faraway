@@ -531,10 +531,10 @@ function afficherTableauScores() {
     const ligneEntete = document.createElement("tr");
 
     const entetes = [
-        "rank",
-        "score",
         "player",
-        "évolution"
+        "score",
+        "rank",
+        ""
     ];
 
     entetes.forEach(texte => {
@@ -647,9 +647,9 @@ function afficherTableauScores() {
         // Ajout de la ligne
         // ----------------------------------------------
 
-        ligne.appendChild(celluleClassement);
-        ligne.appendChild(celluleScore);
         ligne.appendChild(celluleJoueuse);
+        ligne.appendChild(celluleScore);
+        ligne.appendChild(celluleClassement);
         ligne.appendChild(celluleEvolution);
 
         tbody.appendChild(ligne);
