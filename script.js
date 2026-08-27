@@ -315,7 +315,7 @@ function afficherTableauJoueuses(statistiques) {
         const valeurs = [
             joueuse.nom,
             joueuse.parties,
-            joueuse.pourcentageVictoire.toFixed(0),
+            Math.round(joueuse.pourcentageVictoire),
             joueuse.scoresTop20,
             joueuse.meilleurScore,
             joueuse.scoreMin,
