@@ -280,12 +280,12 @@ function afficherTableauScores() {
     // --------------------------------------------------
 
     const colonnes = [
-        ["rank", "col-left"],
+        ["rank", "col-right"],
         ["player", "col-left"],
         ["score", "col-right"],
         ["new", "col-left"],
 
-        ["rank", "col-left"],
+        ["rank", "col-right"],
         ["player", "col-left"],
         ["score", "col-right"],
         ["new", "col-left"]
