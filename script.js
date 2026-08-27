@@ -336,7 +336,7 @@ function afficherTableauScores() {
 
             const valeurs = [
                 joueur.partie === dernierePartie
-                    ? "x"
+                    ? "X"
                     : ""
                 joueur.rang,
                 joueur.joueuse,
@@ -351,7 +351,7 @@ function afficherTableauScores() {
                 cellule.classList.add(colonnes[index][1]);
 
                 if (
-                    valeur === "x" &&
+                    valeur === "X" &&
                     index === 3
                 ) {
                     cellule.classList.add("new");
