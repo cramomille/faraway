@@ -86,21 +86,6 @@ td {
     white-space: nowrap;
 }
 
-/* Nom de la joueuse à gauche */
-td:first-child {
-    text-align: left;
-}
-
-/* Toutes les colonnes numériques à droite */
-td:not(:first-child) {
-    text-align: right;
-}
-
-/* Première colonne */
-td:first-child {
-    text-align: left;
-}
-
 /* Titres des colonnes */
 th {
     font-weight: normal;
@@ -116,3 +101,10 @@ tbody tr {
     color: #58b999;
 }
 
+.col-left {
+    text-align: left;
+}
+
+.col-right {
+    text-align: right;
+}
