@@ -281,14 +281,14 @@ function afficherTableauScores() {
 
     const colonnes = [
         ["rank", "col-left"],
-        ["new", "col-left"],
         ["player", "col-left"],
         ["score", "col-right"],
+        ["new", "col-left"],
 
         ["rank", "col-left"],
-        ["new", "col-left"],
         ["player", "col-left"],
-        ["score", "col-right"]
+        ["score", "col-right"],
+        ["new", "col-left"]
     ];
 
 
@@ -336,11 +336,11 @@ function afficherTableauScores() {
 
             const valeurs = [
                 joueur.rang,
+                joueur.joueuse,
+                joueur.score,
                 joueur.partie === dernierePartie
                     ? "X"
-                    : "",
-                joueur.joueuse,
-                joueur.score
+                    : ""
             ];
 
             valeurs.forEach((valeur, index) => {
