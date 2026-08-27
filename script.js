@@ -648,11 +648,11 @@ function afficherTableauScores() {
         // Ajout de la ligne
         // ----------------------------------------------
 
-        ligne.appendChild(celluleJoueuse);
-        ligne.appendChild(celluleScore);
         ligne.appendChild(celluleClassement);
         ligne.appendChild(celluleEvolution);
-
+        ligne.appendChild(celluleScore);
+        ligne.appendChild(celluleJoueuse);
+        
         tbody.appendChild(ligne);
 
     });
