@@ -120,3 +120,15 @@ th {
 tbody tr {
     border-top: 1px solid #ddd;
 }
+
+.trend-new {
+    color: #58b999;
+}
+
+.trend-up {
+    color: #58b999;
+}
+
+.trend-down {
+    color: #ef776e;
+}
