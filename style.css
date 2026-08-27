@@ -78,6 +78,13 @@ h2 {
     overflow-y: auto;
 }
 
+#tableau-scores thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: white;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
