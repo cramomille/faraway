@@ -617,6 +617,7 @@ function afficherTableauScores() {
             if (ancienRang === undefined) {
 
                 celluleEvolution.textContent = "new";
+                celluleEvolution.style.color = "#58b999";
 
             } else {
 
