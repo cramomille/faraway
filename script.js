@@ -534,7 +534,7 @@ function afficherTableauScores() {
         "player",
         "score",
         "rank",
-        ""
+        "trend"
     ];
 
     entetes.forEach(texte => {
@@ -608,6 +608,7 @@ function afficherTableauScores() {
 
             // Score réalisé lors de la dernière partie
             celluleEvolution.textContent = "new";
+            celluleEvolution.style.color = "#58b999";
 
         } else {
 
@@ -637,7 +638,7 @@ function afficherTableauScores() {
 
                 } else {
 
-                    celluleEvolution.textContent = "";
+                    celluleEvolution.textContent = ".";
                 }
             }
         }
