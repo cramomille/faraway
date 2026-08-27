@@ -337,10 +337,10 @@ function afficherTableauScores() {
             const valeurs = [
                 joueur.partie === dernierePartie
                     ? "X"
-                    : ""
+                    : "",
                 joueur.rang,
                 joueur.joueuse,
-                joueur.score,
+                joueur.score
             ];
 
             valeurs.forEach((valeur, index) => {
@@ -350,10 +350,7 @@ function afficherTableauScores() {
                 cellule.textContent = valeur;
                 cellule.classList.add(colonnes[index][1]);
 
-                if (
-                    valeur === "X" &&
-                    index === 3
-                ) {
+                if (valeur === "X") {
                     cellule.classList.add("new");
                 }
 
