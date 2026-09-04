@@ -147,12 +147,28 @@ save_game <- function(scores,
   # Nommage final du fichier
   file <- file.path(dir, paste0("faraway_game_", id, ".csv"))
   
-  # Enregistrement et affichage dans la console
+  # Enregistrement
   write.csv(df, file = file, row.names = FALSE)
-  print(df)
   
-  return(file)
+  # Calcul du score total de chaque joueuse
+  resultats <- data.frame(
+    joueuse = df$joueuse,
+    score = rowSums(df[, -1])
+  )
+  
+  # Tri du plus petit score au plus grand
+  resultats <- resultats[rev(order(resultats$score)), ]
+  
+  # Affichage du chemin et des resultats
+  print(file)
+  cat("\n")
+  print(resultats, row.names = FALSE)
+  
+  # Retourne le chemin sans le reafficher
+  invisible(file)
 }
+
+
 
 # PARTIES --------------------------------------------------------------------
 ## 2024 ----
@@ -603,7 +619,9 @@ save_game(
     c("antoine",  0, 26,  0, 15, 12,  9, 10,  8, 18)
   ), dir = "data"
 )
-
-
-
-
+save_game(
+  list(
+    c("rose",     0,  0,  0,  8,  8, 10, 12,  4, 36),
+    c("antoine",  9,  4, 20, 12,  6,  0, 17,  0, 22)
+  ), dir = "data"
+)
