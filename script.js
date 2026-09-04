@@ -419,12 +419,6 @@ async function afficherStatistiques() {
 
         afficherTableauScores();
 
-        document
-            .querySelectorAll(".post-loading")
-            .forEach(element => {
-                element.classList.remove("post-loading");
-            });
-
     } catch (erreur) {
 
         console.error(erreur);
