@@ -261,7 +261,9 @@ function afficherTableauScores() {
         )
     ].sort();
 
-    const dernierePartie = parties.at(-1);
+    const dernierePartie1 = parties.at(-1);
+    const dernierePartie2 = parties.at(-2);
+    const dernierePartie3 = parties.at(-3);
 
     const scores = toutesLesLignes.map((joueur, ordre) => ({
         id: `${joueur.partie}_${ordre}`,
@@ -334,13 +336,20 @@ function afficherTableauScores() {
 
         joueurs.forEach(joueur => {
 
+            const nouveau = 
+                joueur.partie === dernierePartie1
+                    ? "x1"
+                    : joueur.partie === dernierePartie2
+                        ? "x2"
+                        : joueur.partie === dernierePartie3
+                            ? "x3"
+                            : "";
+
             const valeurs = [
                 joueur.rang,
                 joueur.joueuse,
                 joueur.score,
-                joueur.partie === dernierePartie
-                    ? "X"
-                    : ""
+                nouveau
             ];
 
             valeurs.forEach((valeur, index) => {
@@ -350,7 +359,7 @@ function afficherTableauScores() {
                 cellule.textContent = valeur;
                 cellule.classList.add(colonnes[index][1]);
 
-                if (valeur === "X") {
+                if (["x1", "x2", "x3"].includes(valeur)) {
                     cellule.classList.add("new");
                 }
 
@@ -409,6 +418,12 @@ async function afficherStatistiques() {
         );
 
         afficherTableauScores();
+
+        document
+            .querySelectorAll(".post-loading")
+            .forEach(element => {
+                element.style.display = "";
+            });
 
     } catch (erreur) {
 

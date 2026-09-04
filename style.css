@@ -52,6 +52,10 @@ h2 {
     line-height: 1.5;
 }
 
+.post-loading {
+    display: none;
+}
+
 #stats {
     white-space: pre-line;
     font-size: 10px;
