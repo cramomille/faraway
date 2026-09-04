@@ -422,7 +422,7 @@ async function afficherStatistiques() {
         document
             .querySelectorAll(".post-loading")
             .forEach(element => {
-                element.style.display = "";
+                element.classList.remove("post-loading");
             });
 
     } catch (erreur) {
